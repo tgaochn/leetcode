@@ -1,0 +1,1 @@
+curGene, level
