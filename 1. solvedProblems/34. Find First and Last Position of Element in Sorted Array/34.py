@@ -23,6 +23,44 @@ null = None
 # !! step1: replace these two lines with the given code
 class Solution:
     def searchRange(self, nums: List[int], target: int) -> List[int]:
+        """
+        标准左右边界搜索模板
+        """
+        
+        n = len(nums)
+        l, r = 0, n - 1
+        while l <= r:
+            mid = (l + r) // 2
+            midVal = nums[mid]
+            if target < midVal:
+                r = mid - 1
+            elif target > midVal:
+                l = mid + 1
+            elif target == midVal:
+                r = mid - 1
+
+        lb = l
+        l, r = 0, n - 1
+        while l <= r:
+            mid = (l + r) // 2
+            midVal = nums[mid]
+            if target < midVal:
+                r = mid - 1
+            elif target > midVal:
+                l = mid + 1
+            elif target == midVal:
+                l = mid + 1
+
+        rb = r
+        if lb >= n or rb < 0 or nums[lb] != target or nums[rb] != target:
+            return [-1, -1]
+
+        return [lb, rb]
+    
+    def searchRange1(self, nums: List[int], target: int) -> List[int]:
+        """
+        二分 + 顺序
+        """
         if not nums: return [-1, -1]
         n = len(nums)
         l, r = 0, n - 1

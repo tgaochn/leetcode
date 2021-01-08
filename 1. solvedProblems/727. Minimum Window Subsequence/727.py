@@ -12,6 +12,7 @@ import sys
 from typing import List
 
 sys.path.append('..')
+sys.path.append('../..')
 from utils import binaryTree, nTree, singleLinkedList
 from utils.utils import (
     printMatrix,
@@ -30,6 +31,11 @@ testCaseCnt = 6
 # !! step1: replace these two lines with the given code
 class Solution:
     def minWindow(self, S: str, T: str) -> str:
+        """
+        sliding window超时了, 不过思路没问题, 真正面试的时候写这个应该没事
+        有个不超时的答案, 参考
+        https://leetcode-cn.com/problems/minimum-window-subsequence/solution/zheng-fan-pi-pei-yi-wen-zhong-zhong-zui-zhong-xiu-/
+        """
         from collections import deque
 
         win = deque()

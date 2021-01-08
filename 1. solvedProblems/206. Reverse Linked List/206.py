@@ -36,6 +36,34 @@ null = None
 #         self.next = None
 
 class Solution:
+    def reverseList(self, head: ListNode) -> ListNode:
+        if not head or not head.next: return head
+        
+        def recurReverse(pre, cur):
+            if not cur:
+                return pre
+            tmp = cur.next
+            cur.next = pre
+            pre = cur
+            cur = tmp
+            return recurReverse(pre, cur)
+        
+        return recurReverse(None, head)
+
+    def reverseList10(self, head: ListNode) -> ListNode:
+        if not head or not head.next: return head
+        
+        pre = None
+        cur = head
+        while cur:
+            tmp = cur.next
+            cur.next = pre
+            pre = cur
+            cur = tmp
+        return pre
+    
+    
+    
     def reverseList2(self, head: ListNode) -> ListNode:
         """
         stack
@@ -55,7 +83,7 @@ class Solution:
         
         return rltLinkedList
 
-    def reverseList(self, head: ListNode) -> ListNode:
+    def reverseList3(self, head: ListNode) -> ListNode:
         """
         recursively: 
         # !! to be reviewed

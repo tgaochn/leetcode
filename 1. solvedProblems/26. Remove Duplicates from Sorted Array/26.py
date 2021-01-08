@@ -44,6 +44,21 @@ for (int i = 0; i < len; i++) {
 
 class Solution:
     def removeDuplicates(self, nums) -> int:
+        """
+        list 去除多个元素/重复元素 - 双指针
+        """
+        sp, fp = 0, 1
+        n = len(nums)
+        while fp < n:
+            if nums[sp] == nums[fp]:
+                fp += 1
+            else:
+                sp += 1
+                nums[sp] = nums[fp]
+        
+        return sp + 1
+        
+    def removeDuplicates1(self, nums) -> int:
         lastEle = None
         eleCnt = 0
         numCnt = len(nums)

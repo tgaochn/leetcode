@@ -49,6 +49,37 @@ null = None
 class Solution:
     def lengthOfLongestSubstring(self, s: str) -> int:
         """
+        最新sliding window模板
+        """
+        from collections import deque
+        
+        l, r = 0, 0
+        n = len(s)
+        win = deque()
+        freqHash = {}
+        maxLen = 0
+
+        while r < n:
+            if freqHash.get(s[r], 0) >= 1:
+                eleL = win.popleft()
+                freqHash[eleL] -= 1
+                l += 1
+            else:
+                win.append(s[r])
+                freqHash.setdefault(s[r], 0)
+                freqHash[s[r]] += 1
+                maxLen = max(maxLen, len(win))
+                r += 1
+        
+        return maxLen
+        
+
+
+                
+            
+    
+    def lengthOfLongestSubstring2(self, s: str) -> int:
+        """
         formatted sliding window
         """
 

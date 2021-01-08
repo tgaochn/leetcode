@@ -31,6 +31,22 @@ def isBadVersion(a):
 
 class Solution:
     def firstBadVersion(self, n):
+        """
+        左边界模板
+        """
+        if isBadVersion(1): return 1
+        
+        l, r = 1, n
+        while l <= r:
+            mid = l + (r - l) // 2
+            if isBadVersion(mid):
+                r = mid - 1
+            else:
+                l = mid + 1
+        return l
+        
+
+    def firstBadVersion2(self, n):
         if isBadVersion(1): return 1
         l, r = 1, n
         minVer = float('inf')

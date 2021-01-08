@@ -23,6 +23,47 @@ null = None
 # !! step1: replace these two lines with the given code
 class Solution:
     def maxScore(self, cardPoints: List[int], k: int) -> int:
+        """
+        固定长度滑动窗口
+        中间sliding window 当做不选的牌
+        """
+        from collections import deque
+        
+        n = len(cardPoints)
+        if k >= n:
+            return sum(cardPoints)
+        
+        l, r = 0, 0
+        win = deque()
+        winSum = 0
+        minWinSum = float('inf')
+        
+        while r < n:
+            # print(win, winSum)
+            if len(win) < n - k:
+                win.append(cardPoints[r])
+                winSum += cardPoints[r]
+                r += 1
+                if len(win) == n - k:
+                    winSum = sum(win)
+                    minWinSum = min(winSum, minWinSum)
+            else:
+                eleL = win.popleft()
+                win.append(cardPoints[r])
+                winSum = winSum - eleL + cardPoints[r]
+                minWinSum = min(winSum, minWinSum)
+                l += 1
+                r += 1
+        
+        minWinSum = min(sum(win), minWinSum)
+        return sum(cardPoints) - minWinSum
+    # endFunc  
+        
+    def maxScore1(self, cardPoints: List[int], k: int) -> int:
+        """
+        不是普通的sliding window, 抽卡的id可以是[0, 1, -1]
+        所以每次从正向list中去掉最后一位, 增加反向list的一位
+        """
         n = len(cardPoints)
         if n == k:
             return sum(cardPoints)
@@ -55,21 +96,23 @@ def func():
         # nTree.buildTree([])
     )
     enableInput1 = True
-    expectedRlt1 = None
+    expectedRlt1 = 248
 
     # ! para2
     input2 = (
-        None
+        [1, 1000, 1],
+        1,
     )
     enableInput2 = True
     expectedRlt2 = None
 
     # ! para3
     input3 = (
-        None
+        [1, 2, 3, 4, 5, 6, 1],
+        3,
     )
     enableInput3 = True
-    expectedRlt3 = None
+    expectedRlt3 = 12
     # !! ====================================
 
     # instances that need an extra empty line
