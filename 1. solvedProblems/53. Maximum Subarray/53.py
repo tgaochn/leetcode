@@ -60,8 +60,7 @@ null = None
 class Solution:
     def maxSubArray(self, nums: List[int]) -> int:
         """
-        DP
-        以nums[i]结尾的子串, 一定要带最后一位, 可选是否带上前面的位
+        DP: 以nums[i]结尾的子串最大和
         """
         n = len(nums)
         dp = [0] * n

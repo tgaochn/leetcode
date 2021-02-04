@@ -4,7 +4,7 @@
 Author:
     Tian Gao (tgaochn@gmail.com)
 CreationDate:
-    Tue, 01/26/2021, 23:37
+    Thu, 01/28/2021, 24:02
 # !! Description:
 
 """
@@ -33,49 +33,33 @@ false = False
 
 # !! step1: replace these two lines with the given code
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
+    def palindrome(self, s):
         """
-        完全背包 complete package
-        https://leetcode-cn.com/problems/coin-change/solution/dong-tai-gui-hua-shi-yong-wan-quan-bei-bao-wen-ti-/
-        评论部分
+        LC 647 变种 
+        DP, 从j到i的子串做出二维DP
+        需要找到 unique substring，记得用 set 去除得到 unique string
+        https://leetcode.com/problems/palindromic-substrings/
         """
-        n = len(coins)
-        p = amount
-        value = [1] * n
-        cost = coins
+        rlt = 0
+        n = len(s)
+        dp = [[0] * n for _ in range(n)]
+        visited = set()
 
-        dp = [[float('inf')] * (p + 1) for _ in range(n + 1)]
+        for i in range(n):
+            for j in range(i + 1):
+                curStr = s[j: i + 1]
+                # print(curStr)
+                if i == j or (i == j + 1 and s[i] == s[j]) or (dp[j + 1][i - 1] and s[i] == s[j]):
+                    dp[j][i] = 1
+                    if curStr not in visited:
+                        rlt += 1
+                        visited.add(curStr)
 
-        # 第一列为0, 而不是第一行
-        for i in range(n + 1):
-            dp[i][0] = 0
-
-        for i in range(1, n + 1):
-            for j in range(p + 1):
-                if j - cost[i - 1] >= 0:
-                    dp[i][j] = min(dp[i - 1][j], dp[i][j - cost[i - 1]] + value[i - 1]) # 取最小
-                else:
-                    dp[i][j] = dp[i - 1][j]
-
-        # printMatrix(dp)
-        return dp[-1][-1] if dp[-1][-1] < float('inf') else -1
+        return rlt
     # endFunc
+# endClass
 
-    def coinChange1(self, coins: List[int], amount: int) -> int:
-        """
-        DP
-        有些路径不能走, 要标识一下, 不然结果不对
-        """
-        dp = [(-1, amount)] * (amount + 1)
-        dp[0] = (0, amount)
-        for i in range(1, amount + 1):
-            availCoins = [coin for coin in coins if coin <= i]
-            if availCoins:
-                candLis = [(dp[i - coin][0] + 1, dp[i - coin][1] - coin) for coin in availCoins if dp[i - coin][0] != -1]
-                if candLis:
-                    dp[i] = min(candLis, key=lambda x: x[0])
-
-        return dp[amount][0] if dp[amount][1] == 0 else -1
+        pass
     # endFunc
 # endClass
 
@@ -83,11 +67,11 @@ def func():
     # !! step2: change function name
     s = Solution()
     myFuncLis = [
-        s.coinChange,
+        s.palindrome,
         # optional: add another function for comparison
     ]
 
-    onlyDisplayError = True
+    onlyDisplayError = False
     enableInput = [True] * testCaseCnt
     input = [None] * testCaseCnt
     expectedRlt = [None] * testCaseCnt
@@ -100,18 +84,18 @@ def func():
 
     # !! step3: change input para, input para can be found in "run code" - "test case"
     # ! para1
-    input[0] = parsePara('coins = [1,2,5], amount = 11')
-    # input[0] = (
-        # None,
-    # )
-    expectedRlt[0] = 3
+    # input[0] = parsePara('None')
+    input[0] = (
+        'aabaa',
+    )
+    expectedRlt[0] = 5
 
     # ! para2
-    input[1] = parsePara('coins = [2], amount = 3')
-    # input[1] = (
-        # None,
-    # )
-    expectedRlt[1] = -1
+    # input[1] = parsePara('None')
+    input[1] = (
+        'aaa',
+    )
+    expectedRlt[1] = 3
 
     # ! para3
     # input[2] = parsePara('None')

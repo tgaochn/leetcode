@@ -4,9 +4,13 @@
 Author:
     Tian Gao (tgaochn@gmail.com)
 CreationDate:
-    Tue, 01/26/2021, 23:37
+    Sat, 11/14/2020, 17:26
 # !! Description:
+题目:
+https://leetcode.com/discuss/interview-question/402014/IBM-or-OA-2019-or-Parking-Dilemma
+https://leetcode.com/discuss/interview-question/379066/Twitter-or-OA-2019-or-Parking-Dilemma/340609
 
+类似于 LC 239
 """
 import sys
 from typing import List
@@ -19,7 +23,6 @@ from utils.utils import (
     printDict,
     printList,
     isMatrix,
-    parsePara,
 )
 
 ListNode = singleLinkedList.ListNode
@@ -28,54 +31,28 @@ Node = nTree.Node
 null = None
 testCaseCnt = 6
 # maxFuncInputParaCnt = 8
-true = True
-false = False
 
 # !! step1: replace these two lines with the given code
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
+    def carParkingRoof(self, cars, k):
         """
-        完全背包 complete package
-        https://leetcode-cn.com/problems/coin-change/solution/dong-tai-gui-hua-shi-yong-wan-quan-bei-bao-wen-ti-/
-        评论部分
+        Parking Dilemma
+        这个题 LC 讨论里的图非常不清楚，不过好像不难，用 sliding window 就好
+        https://leetcode.com/discuss/interview-question/379066/Twitter-or-OA-2019-or-Parking-Dilemma
+        https://www.lintcode.com/problem/parking-dilemma/description
         """
-        n = len(coins)
-        p = amount
-        value = [1] * n
-        cost = coins
+        cars.sort()
+        n = len(cars)
+        l, r = 0, k - 1
+        minLen = cars[r] - cars[l] + 1
 
-        dp = [[float('inf')] * (p + 1) for _ in range(n + 1)]
+        while r < n:
+            curLen = cars[r] - cars[l] + 1
+            minLen = min(minLen, curLen)
+            r += 1
+            l += 1
 
-        # 第一列为0, 而不是第一行
-        for i in range(n + 1):
-            dp[i][0] = 0
-
-        for i in range(1, n + 1):
-            for j in range(p + 1):
-                if j - cost[i - 1] >= 0:
-                    dp[i][j] = min(dp[i - 1][j], dp[i][j - cost[i - 1]] + value[i - 1]) # 取最小
-                else:
-                    dp[i][j] = dp[i - 1][j]
-
-        # printMatrix(dp)
-        return dp[-1][-1] if dp[-1][-1] < float('inf') else -1
-    # endFunc
-
-    def coinChange1(self, coins: List[int], amount: int) -> int:
-        """
-        DP
-        有些路径不能走, 要标识一下, 不然结果不对
-        """
-        dp = [(-1, amount)] * (amount + 1)
-        dp[0] = (0, amount)
-        for i in range(1, amount + 1):
-            availCoins = [coin for coin in coins if coin <= i]
-            if availCoins:
-                candLis = [(dp[i - coin][0] + 1, dp[i - coin][1] - coin) for coin in availCoins if dp[i - coin][0] != -1]
-                if candLis:
-                    dp[i] = min(candLis, key=lambda x: x[0])
-
-        return dp[amount][0] if dp[amount][1] == 0 else -1
+        return minLen
     # endFunc
 # endClass
 
@@ -83,7 +60,7 @@ def func():
     # !! step2: change function name
     s = Solution()
     myFuncLis = [
-        s.coinChange,
+        s.carParkingRoof,
         # optional: add another function for comparison
     ]
 
@@ -100,44 +77,58 @@ def func():
 
     # !! step3: change input para, input para can be found in "run code" - "test case"
     # ! para1
-    input[0] = parsePara('coins = [1,2,5], amount = 11')
-    # input[0] = (
-        # None,
-    # )
-    expectedRlt[0] = 3
+    input[0] = (
+        [2, 10, 8, 17],
+        3
+        # binaryTree.buildTree(None)
+        # singleLinkedList.buildSingleList(None)
+        # nTree.buildTree(None)
+    )
+    expectedRlt[0] = 9
 
     # ! para2
-    input[1] = parsePara('coins = [2], amount = 3')
-    # input[1] = (
-        # None,
-    # )
-    expectedRlt[1] = -1
+    input[1] = (
+        [1,2,3,10],
+        4
+        # binaryTree.buildTree(None),
+        # singleLinkedList.buildSingleList(None),
+        # nTree.buildTree(None),
+    )
+    expectedRlt[1] = 10
 
     # ! para3
-    # input[2] = parsePara('None')
     input[2] = (
-        None,
+        None
+        # singleLinkedList.buildSingleList(None),
+        # binaryTree.buildTree(None),
+        # nTree.buildTree(None),
     )
     expectedRlt[2] = None
 
     # ! para4
-    # input[3] = parsePara('None')
     input[3] = (
-        None,
+        None
+        # singleLinkedList.buildSingleList(None),
+        # binaryTree.buildTree(None),
+        # nTree.buildTree(None),
     )
     expectedRlt[3] = None
 
     # ! para5
-    # input[4] = parsePara('None')
     input[4] = (
         None
+        # singleLinkedList.buildSingleList(None),
+        # binaryTree.buildTree(None),
+        # nTree.buildTree(None),
     )
     expectedRlt[4] = None
 
     # ! para6
-    # input[5] = parsePara('None')
     input[5] = (
         None
+        # singleLinkedList.buildSingleList(None),
+        # binaryTree.buildTree(None),
+        # nTree.buildTree(None),
     )
     expectedRlt[5] = None
     # !! ====================================
@@ -152,7 +143,7 @@ def func():
 
     # for each test case
     for inputPara, enableInput, expectedRlt in allInput:
-        if not enableInput or not inputPara or (isinstance(inputPara, tuple) and not inputPara[0]): continue
+        if not enableInput or not inputPara: continue
         inputParaList = [None] * funcParaCnt
 
         if not isinstance(inputPara, tuple):
@@ -195,22 +186,13 @@ def func():
             # output para
             for k in range(funcParaCnt):
                 para = inputParaList[k]
-                if para:
-                    formatPrint('input %s:' % (k + 1), para)
-                else:
-                    print(para)
+                formatPrint('input %s:' % (k + 1), para)
 
             # output result
             print()
-            if not rlt:
-                print('rlt:\t', rlt)
-            else:
-                formatPrint('rlt:', rlt)
+            formatPrint('rlt:', rlt)
             if expectedRlt is not None:
-                if not expectedRlt:
-                    print('expRlt:\t', expectedRlt)
-                else:
-                    formatPrint('expRlt:', expectedRlt)
+                formatPrint('expRlt:', expectedRlt)
     print('==' * 20)
 # endFunc
 
@@ -238,5 +220,3 @@ def main():
 if __name__ == "__main__":
     main()
 # endIf
-
-# !! ========================== Obsolete Code ==========================

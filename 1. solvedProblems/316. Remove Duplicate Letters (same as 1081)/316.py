@@ -27,7 +27,6 @@ class Solution:
         单调栈
         https://leetcode-cn.com/problems/remove-duplicate-letters/solution/zhan-by-liweiwei1419/
         """
-        rlt = []
         mystack = []
         lastPosDic = {}
         for idx, ele in enumerate(s):

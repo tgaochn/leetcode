@@ -4,7 +4,7 @@
 Author:
     Tian Gao (tgaochn@gmail.com)
 CreationDate:
-    Tue, 01/26/2021, 23:37
+    Wed, 01/27/2021, 20:23
 # !! Description:
 
 """
@@ -33,49 +33,45 @@ false = False
 
 # !! step1: replace these two lines with the given code
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
+    def maxheight(self, tablePositions, tableHeights):
         """
-        完全背包 complete package
-        https://leetcode-cn.com/problems/coin-change/solution/dong-tai-gui-hua-shi-yong-wan-quan-bei-bao-wen-ti-/
-        评论部分
+        https://leetcode.com/discuss/interview-question/373110/Twitter-or-OA-2019-or-New-Office-Design
+        https://github.com/maverick009/Leetcode/blob/master/000.%20Twitter%20-%20New%20Office%20Design/src/main/Main.java
         """
-        n = len(coins)
-        p = amount
-        value = [1] * n
-        cost = coins
+        def helper(dist, h1, h2):
+            minHeight = min(h1, h2)
+            maxHeight = max(h1, h2)
+            if dist == 0:
+                return 0
+            
+            if dist == 1:
+                return minHeight + 1
+            
+            if minHeight == maxHeight:
+                plus = dist // 2 if dist % 2 == 0 else dist // 2 + 1
+                return minHeight + plus
 
-        dp = [[float('inf')] * (p + 1) for _ in range(n + 1)]
+            diff = maxHeight - minHeight
+            if diff < dist:
+                dist -= diff
+                minHeight += diff
+                plus = dist // 2 if dist % 2 == 0 else dist // 2 + 1
+                return minHeight + plus
 
-        # 第一列为0, 而不是第一行
-        for i in range(n + 1):
-            dp[i][0] = 0
+            return minHeight + dist
+        # endFunc
+        
+        m = len(tablePositions)
+        n = len(tableHeights)
+        if m == 0 or n == 0 or m != n:
+            return 0
 
-        for i in range(1, n + 1):
-            for j in range(p + 1):
-                if j - cost[i - 1] >= 0:
-                    dp[i][j] = min(dp[i - 1][j], dp[i][j - cost[i - 1]] + value[i - 1]) # 取最小
-                else:
-                    dp[i][j] = dp[i - 1][j]
-
-        # printMatrix(dp)
-        return dp[-1][-1] if dp[-1][-1] < float('inf') else -1
-    # endFunc
-
-    def coinChange1(self, coins: List[int], amount: int) -> int:
-        """
-        DP
-        有些路径不能走, 要标识一下, 不然结果不对
-        """
-        dp = [(-1, amount)] * (amount + 1)
-        dp[0] = (0, amount)
-        for i in range(1, amount + 1):
-            availCoins = [coin for coin in coins if coin <= i]
-            if availCoins:
-                candLis = [(dp[i - coin][0] + 1, dp[i - coin][1] - coin) for coin in availCoins if dp[i - coin][0] != -1]
-                if candLis:
-                    dp[i] = min(candLis, key=lambda x: x[0])
-
-        return dp[amount][0] if dp[amount][1] == 0 else -1
+        rlt = 0
+        for i in range(1, n):
+            cur = helper(tablePositions[i] - tablePositions[i - 1] - 1, tableHeights[i], tableHeights[i - 1])
+            rlt = max(cur, rlt)
+        
+        return rlt
     # endFunc
 # endClass
 
@@ -83,11 +79,11 @@ def func():
     # !! step2: change function name
     s = Solution()
     myFuncLis = [
-        s.coinChange,
+        s.maxheight,
         # optional: add another function for comparison
     ]
 
-    onlyDisplayError = True
+    onlyDisplayError = False
     enableInput = [True] * testCaseCnt
     input = [None] * testCaseCnt
     expectedRlt = [None] * testCaseCnt
@@ -100,18 +96,20 @@ def func():
 
     # !! step3: change input para, input para can be found in "run code" - "test case"
     # ! para1
-    input[0] = parsePara('coins = [1,2,5], amount = 11')
-    # input[0] = (
-        # None,
-    # )
-    expectedRlt[0] = 3
+    # input[0] = parsePara('None')
+    input[0] = (
+        [1,3,7],
+        [4,3,3]
+    )
+    expectedRlt[0] = 5
 
     # ! para2
-    input[1] = parsePara('coins = [2], amount = 3')
-    # input[1] = (
-        # None,
-    # )
-    expectedRlt[1] = -1
+    # input[1] = parsePara('None')
+    input[1] = (
+        [1, 10],
+        [1,5]
+    )
+    expectedRlt[1] = 7
 
     # ! para3
     # input[2] = parsePara('None')

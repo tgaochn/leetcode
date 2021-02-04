@@ -4,7 +4,7 @@
 Author:
     Tian Gao (tgaochn@gmail.com)
 CreationDate:
-    Tue, 01/26/2021, 23:37
+    Tue, 01/26/2021, 20:16
 # !! Description:
 
 """
@@ -33,49 +33,32 @@ false = False
 
 # !! step1: replace these two lines with the given code
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
+    def canPartition(self, nums: List[int]) -> bool:
         """
-        完全背包 complete package
-        https://leetcode-cn.com/problems/coin-change/solution/dong-tai-gui-hua-shi-yong-wan-quan-bei-bao-wen-ti-/
-        评论部分
+        等价转换：是否可以从输入数组中挑选出一些正整数，使得这些数的和 等于 整个数组元素的和的一半。
+        从而转化成0-1背包
+        https://leetcode-cn.com/problems/partition-equal-subset-sum/solution/bang-ni-ba-0-1bei-bao-xue-ge-tong-tou-by-px33/
+        https://leetcode-cn.com/problems/partition-equal-subset-sum/solution/0-1-bei-bao-wen-ti-xiang-jie-zhen-dui-ben-ti-de-yo/
         """
-        n = len(coins)
-        p = amount
-        value = [1] * n
-        cost = coins
+        numSum = sum(nums)
+        if numSum % 2 == 1: return False
 
-        dp = [[float('inf')] * (p + 1) for _ in range(n + 1)]
-
-        # 第一列为0, 而不是第一行
-        for i in range(n + 1):
-            dp[i][0] = 0
-
+        p = numSum // 2
+        n = len(nums)
+        cost = nums
+        value = nums
+        
+        dp = [[0] * (p + 1) for _ in range(n + 1)]
         for i in range(1, n + 1):
-            for j in range(p + 1):
-                if j - cost[i - 1] >= 0:
-                    dp[i][j] = min(dp[i - 1][j], dp[i][j - cost[i - 1]] + value[i - 1]) # 取最小
-                else:
-                    dp[i][j] = dp[i - 1][j]
-
+            for j in range(p, cost[i - 1] - 1, -1):
+                dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - cost[i - 1]] + value[i - 1])
+                
+            if dp[i][-1] == p:
+                # printMatrix(dp)
+                return True
+        
         # printMatrix(dp)
-        return dp[-1][-1] if dp[-1][-1] < float('inf') else -1
-    # endFunc
-
-    def coinChange1(self, coins: List[int], amount: int) -> int:
-        """
-        DP
-        有些路径不能走, 要标识一下, 不然结果不对
-        """
-        dp = [(-1, amount)] * (amount + 1)
-        dp[0] = (0, amount)
-        for i in range(1, amount + 1):
-            availCoins = [coin for coin in coins if coin <= i]
-            if availCoins:
-                candLis = [(dp[i - coin][0] + 1, dp[i - coin][1] - coin) for coin in availCoins if dp[i - coin][0] != -1]
-                if candLis:
-                    dp[i] = min(candLis, key=lambda x: x[0])
-
-        return dp[amount][0] if dp[amount][1] == 0 else -1
+        return False
     # endFunc
 # endClass
 
@@ -83,7 +66,7 @@ def func():
     # !! step2: change function name
     s = Solution()
     myFuncLis = [
-        s.coinChange,
+        s.canPartition,
         # optional: add another function for comparison
     ]
 
@@ -100,25 +83,25 @@ def func():
 
     # !! step3: change input para, input para can be found in "run code" - "test case"
     # ! para1
-    input[0] = parsePara('coins = [1,2,5], amount = 11')
-    # input[0] = (
-        # None,
-    # )
-    expectedRlt[0] = 3
+    # input[0] = parsePara('None')
+    input[0] = (
+        [1, 5, 11, 5],
+    )
+    expectedRlt[0] = True
 
     # ! para2
-    input[1] = parsePara('coins = [2], amount = 3')
-    # input[1] = (
-        # None,
-    # )
-    expectedRlt[1] = -1
+    # input[1] = parsePara('None')
+    input[1] = (
+        [1, 2, 3, 5],
+    )
+    expectedRlt[1] = False
 
     # ! para3
     # input[2] = parsePara('None')
     input[2] = (
-        None,
+        [1,2,5],
     )
-    expectedRlt[2] = None
+    expectedRlt[2] = False
 
     # ! para4
     # input[3] = parsePara('None')

@@ -4,7 +4,7 @@
 Author:
     Tian Gao (tgaochn@gmail.com)
 CreationDate:
-    Tue, 01/26/2021, 23:37
+    Wed, 01/27/2021, 18:07
 # !! Description:
 
 """
@@ -33,49 +33,36 @@ false = False
 
 # !! step1: replace these two lines with the given code
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
+    def fountainActivation(self, a):
         """
-        完全背包 complete package
-        https://leetcode-cn.com/problems/coin-change/solution/dong-tai-gui-hua-shi-yong-wan-quan-bei-bao-wen-ti-/
-        评论部分
+        算是 greedy 里比较经典的区间覆盖问题，可以转化成 interval 以后 sort
+        https://leetcode.com/discuss/interview-question/363036/Twitter-or-OA-2019-or-Activate-Fountain
+        https://www.chegg.com/homework-help/questions-and-answers/hello-m-trouble-problem-would-prefer-solution-either-java-javascript-thank--another-test-c-q39698027
+        https://leetcode-cn.com/problems/minimum-number-of-taps-to-open-to-water-a-garden/
         """
-        n = len(coins)
-        p = amount
-        value = [1] * n
-        cost = coins
+        A = a
+        if not A: return 0
 
-        dp = [[float('inf')] * (p + 1) for _ in range(n + 1)]
+        # For all left end of interval, store the largest right end
+        n = len(A)
+        aux = [0] * (n + 1)
+        for i, x in enumerate(A, 1):
+            aux[max(i - x, 1)] = max(aux[max(i - x, 1)], min(i + x, n))
+        # print(A)
+        # print(aux[1:])
 
-        # 第一列为0, 而不是第一行
-        for i in range(n + 1):
-            dp[i][0] = 0
-
-        for i in range(1, n + 1):
-            for j in range(p + 1):
-                if j - cost[i - 1] >= 0:
-                    dp[i][j] = min(dp[i - 1][j], dp[i][j - cost[i - 1]] + value[i - 1]) # 取最小
-                else:
-                    dp[i][j] = dp[i - 1][j]
-
-        # printMatrix(dp)
-        return dp[-1][-1] if dp[-1][-1] < float('inf') else -1
-    # endFunc
-
-    def coinChange1(self, coins: List[int], amount: int) -> int:
-        """
-        DP
-        有些路径不能走, 要标识一下, 不然结果不对
-        """
-        dp = [(-1, amount)] * (amount + 1)
-        dp[0] = (0, amount)
-        for i in range(1, amount + 1):
-            availCoins = [coin for coin in coins if coin <= i]
-            if availCoins:
-                candLis = [(dp[i - coin][0] + 1, dp[i - coin][1] - coin) for coin in availCoins if dp[i - coin][0] != -1]
-                if candLis:
-                    dp[i] = min(candLis, key=lambda x: x[0])
-
-        return dp[amount][0] if dp[amount][1] == 0 else -1
+        ans, l, r = 0, 1, aux[1]
+        while r <= n:
+            new_r, ans = r, ans + 1
+            # If the fountain ranges overlap
+            # get the rightmost bound for next search
+            while l <= r:
+                new_r = max(new_r, aux[l])
+                l += 1
+            if l > n: break
+            # If the fountain ranges don't overlap
+            r = max(new_r, aux[l])
+        return ans
     # endFunc
 # endClass
 
@@ -83,7 +70,7 @@ def func():
     # !! step2: change function name
     s = Solution()
     myFuncLis = [
-        s.coinChange,
+        s.fountainActivation,
         # optional: add another function for comparison
     ]
 
@@ -100,32 +87,32 @@ def func():
 
     # !! step3: change input para, input para can be found in "run code" - "test case"
     # ! para1
-    input[0] = parsePara('coins = [1,2,5], amount = 11')
-    # input[0] = (
-        # None,
-    # )
-    expectedRlt[0] = 3
+    # input[0] = parsePara('None')
+    input[0] = (
+        [1,1,1],
+    )
+    expectedRlt[0] = 1
 
     # ! para2
-    input[1] = parsePara('coins = [2], amount = 3')
-    # input[1] = (
-        # None,
-    # )
-    expectedRlt[1] = -1
+    # input[1] = parsePara('None')
+    input[1] = (
+        [2,0,0,0],
+    )
+    expectedRlt[1] = 2
 
     # ! para3
     # input[2] = parsePara('None')
     input[2] = (
-        None,
+        [0, 0, 0, 3, 0, 0, 2, 0, 0],
     )
-    expectedRlt[2] = None
+    expectedRlt[2] = 2
 
     # ! para4
     # input[3] = parsePara('None')
     input[3] = (
-        None,
+        [3, 0, 2, 0, 1, 0],
     )
-    expectedRlt[3] = None
+    expectedRlt[3] = 2
 
     # ! para5
     # input[4] = parsePara('None')

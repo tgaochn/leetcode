@@ -4,7 +4,7 @@
 Author:
     Tian Gao (tgaochn@gmail.com)
 CreationDate:
-    Tue, 01/26/2021, 23:37
+    Wed, 01/27/2021, 18:51
 # !! Description:
 
 """
@@ -33,49 +33,25 @@ false = False
 
 # !! step1: replace these two lines with the given code
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
+    def weirdFaculty(self, v):
         """
-        完全背包 complete package
-        https://leetcode-cn.com/problems/coin-change/solution/dong-tai-gui-hua-shi-yong-wan-quan-bei-bao-wen-ti-/
-        评论部分
+        0转化成-1, 然后循环比较找index即可
+        https://leetcode.com/discuss/interview-question/374440/Twitter-or-OA-2019-or-Weird-Faculty
         """
-        n = len(coins)
-        p = amount
-        value = [1] * n
-        cost = coins
+        n = len(v)
 
-        dp = [[float('inf')] * (p + 1) for _ in range(n + 1)]
+        # Convert all the zeros to -1 as the zero gives us the negative score of -1
+        v = [-1 if v[i] == 0 else v[i] for i in range(n)]
 
-        # 第一列为0, 而不是第一行
-        for i in range(n + 1):
-            dp[i][0] = 0
-
-        for i in range(1, n + 1):
-            for j in range(p + 1):
-                if j - cost[i - 1] >= 0:
-                    dp[i][j] = min(dp[i - 1][j], dp[i][j - cost[i - 1]] + value[i - 1]) # 取最小
-                else:
-                    dp[i][j] = dp[i - 1][j]
-
-        # printMatrix(dp)
-        return dp[-1][-1] if dp[-1][-1] < float('inf') else -1
-    # endFunc
-
-    def coinChange1(self, coins: List[int], amount: int) -> int:
-        """
-        DP
-        有些路径不能走, 要标识一下, 不然结果不对
-        """
-        dp = [(-1, amount)] * (amount + 1)
-        dp[0] = (0, amount)
-        for i in range(1, amount + 1):
-            availCoins = [coin for coin in coins if coin <= i]
-            if availCoins:
-                candLis = [(dp[i - coin][0] + 1, dp[i - coin][1] - coin) for coin in availCoins if dp[i - coin][0] != -1]
-                if candLis:
-                    dp[i] = min(candLis, key=lambda x: x[0])
-
-        return dp[amount][0] if dp[amount][1] == 0 else -1
+        # Find the point where current sum is greater than the total sum
+        mySum = 0
+        friendSum = sum(v)
+        for i in range(n):
+            if mySum > friendSum:
+                return i
+            mySum += v[i]
+            friendSum -= v[i]
+        return n
     # endFunc
 # endClass
 
@@ -83,7 +59,7 @@ def func():
     # !! step2: change function name
     s = Solution()
     myFuncLis = [
-        s.coinChange,
+        s.weirdFaculty,
         # optional: add another function for comparison
     ]
 
@@ -100,25 +76,25 @@ def func():
 
     # !! step3: change input para, input para can be found in "run code" - "test case"
     # ! para1
-    input[0] = parsePara('coins = [1,2,5], amount = 11')
-    # input[0] = (
-        # None,
-    # )
-    expectedRlt[0] = 3
+    # input[0] = parsePara('None')
+    input[0] = (
+        [1, 0, 0, 1, 0],
+    )
+    expectedRlt[0] = 0
 
     # ! para2
-    input[1] = parsePara('coins = [2], amount = 3')
-    # input[1] = (
-        # None,
-    # )
-    expectedRlt[1] = -1
+    # input[1] = parsePara('None')
+    input[1] = (
+        [1, 0, 0, 1, 1],
+    )
+    expectedRlt[1] = 1
 
     # ! para3
     # input[2] = parsePara('None')
     input[2] = (
-        None,
+        [1, 1, 1, 0, 1],
     )
-    expectedRlt[2] = None
+    expectedRlt[2] = 2
 
     # ! para4
     # input[3] = parsePara('None')

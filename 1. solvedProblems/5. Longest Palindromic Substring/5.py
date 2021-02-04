@@ -24,6 +24,9 @@ null = None
 # !! step1: replace these two lines with the given code
 class Solution:
     def longestPalindrome(self, s: str) -> str:
+        """
+        经典DP, dp[i][j] 表示子串 s[i..j] 是否为回文子串, 如果是, 长度多少
+        """
         n = len(s)
         dp = [[0] * n for _ in range(n)]
         maxPaliLen = 1

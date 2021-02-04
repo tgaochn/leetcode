@@ -4,7 +4,7 @@
 Author:
     Tian Gao (tgaochn@gmail.com)
 CreationDate:
-    Tue, 01/26/2021, 23:37
+    Wed, 01/27/2021, 24:05
 # !! Description:
 
 """
@@ -33,49 +33,34 @@ false = False
 
 # !! step1: replace these two lines with the given code
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
+    """
+    @param A: an integer array
+    @param V: an integer array
+    @param m: An integer
+    @return: an array
+    """
+
+    def backPackIII(self, A, V, m):
         """
-        完全背包 complete package
-        https://leetcode-cn.com/problems/coin-change/solution/dong-tai-gui-hua-shi-yong-wan-quan-bei-bao-wen-ti-/
-        评论部分
+        标准完全背包
+        https://www.lintcode.com/problem/backpack-iii
         """
-        n = len(coins)
-        p = amount
-        value = [1] * n
-        cost = coins
+        n = len(A)
+        p = m
+        value = V
+        cost = A
 
-        dp = [[float('inf')] * (p + 1) for _ in range(n + 1)]
-
-        # 第一列为0, 而不是第一行
-        for i in range(n + 1):
-            dp[i][0] = 0
-
+        dp = [[0] * (p + 1) for _ in range(n + 1)]
+        dp[0] = [0] * (p + 1)
         for i in range(1, n + 1):
             for j in range(p + 1):
                 if j - cost[i - 1] >= 0:
-                    dp[i][j] = min(dp[i - 1][j], dp[i][j - cost[i - 1]] + value[i - 1]) # 取最小
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - cost[i - 1]] + value[i - 1])
                 else:
                     dp[i][j] = dp[i - 1][j]
-
+        
         # printMatrix(dp)
-        return dp[-1][-1] if dp[-1][-1] < float('inf') else -1
-    # endFunc
-
-    def coinChange1(self, coins: List[int], amount: int) -> int:
-        """
-        DP
-        有些路径不能走, 要标识一下, 不然结果不对
-        """
-        dp = [(-1, amount)] * (amount + 1)
-        dp[0] = (0, amount)
-        for i in range(1, amount + 1):
-            availCoins = [coin for coin in coins if coin <= i]
-            if availCoins:
-                candLis = [(dp[i - coin][0] + 1, dp[i - coin][1] - coin) for coin in availCoins if dp[i - coin][0] != -1]
-                if candLis:
-                    dp[i] = min(candLis, key=lambda x: x[0])
-
-        return dp[amount][0] if dp[amount][1] == 0 else -1
+        return dp[-1][-1]
     # endFunc
 # endClass
 
@@ -83,7 +68,7 @@ def func():
     # !! step2: change function name
     s = Solution()
     myFuncLis = [
-        s.coinChange,
+        s.backPackIII,
         # optional: add another function for comparison
     ]
 
@@ -91,8 +76,8 @@ def func():
     enableInput = [True] * testCaseCnt
     input = [None] * testCaseCnt
     expectedRlt = [None] * testCaseCnt
-    # enableInput[0] = False
-    # enableInput[1] = False
+    enableInput[0] = False
+    enableInput[1] = False
     # enableInput[2] = False
     # enableInput[3] = False
     # enableInput[4] = False
@@ -100,23 +85,27 @@ def func():
 
     # !! step3: change input para, input para can be found in "run code" - "test case"
     # ! para1
-    input[0] = parsePara('coins = [1,2,5], amount = 11')
+    input[0] = parsePara('A = [2,3,5,7], V = [1,5,2,4], m = 10')
     # input[0] = (
         # None,
     # )
-    expectedRlt[0] = 3
+    expectedRlt[0] = 15
 
     # ! para2
-    input[1] = parsePara('coins = [2], amount = 3')
-    # input[1] = (
-        # None,
-    # )
-    expectedRlt[1] = -1
+    # input[1] = parsePara('None')
+    input[1] = (
+        [1],
+        [1],
+        10,
+    )
+    expectedRlt[1] = 10
 
     # ! para3
     # input[2] = parsePara('None')
     input[2] = (
-        None,
+        [5,3,6,3],
+        [10,40,30,50],
+        10,
     )
     expectedRlt[2] = None
 

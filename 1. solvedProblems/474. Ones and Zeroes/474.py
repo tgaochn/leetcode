@@ -4,7 +4,7 @@
 Author:
     Tian Gao (tgaochn@gmail.com)
 CreationDate:
-    Tue, 01/26/2021, 23:37
+    Tue, 01/26/2021, 20:40
 # !! Description:
 
 """
@@ -33,49 +33,37 @@ false = False
 
 # !! step1: replace these two lines with the given code
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
+    def findMaxForm(self, strs: List[str], m: int, n: int) -> int:
         """
-        完全背包 complete package
-        https://leetcode-cn.com/problems/coin-change/solution/dong-tai-gui-hua-shi-yong-wan-quan-bei-bao-wen-ti-/
-        评论部分
+        0-1背包变体
+        2个维度的cost, 所以使用3个维度, dp是一个cube
+        每层对应一个str
+        层的x, y对应0, 1数量
         """
-        n = len(coins)
-        p = amount
-        value = [1] * n
-        cost = coins
+        eleCnt = len(strs)
+        p0 = m
+        p1 = n
+        value = [1] * eleCnt
+        cost0 = []
+        cost1 = []
 
-        dp = [[float('inf')] * (p + 1) for _ in range(n + 1)]
+        for ele in strs:
+            strLen = len(ele)
+            cnt0 = ele.count('0')
+            cnt1 = strLen - cnt0
+            cost0.append(cnt0)
+            cost1.append(cnt1)
 
-        # 第一列为0, 而不是第一行
-        for i in range(n + 1):
-            dp[i][0] = 0
-
-        for i in range(1, n + 1):
-            for j in range(p + 1):
-                if j - cost[i - 1] >= 0:
-                    dp[i][j] = min(dp[i - 1][j], dp[i][j - cost[i - 1]] + value[i - 1]) # 取最小
-                else:
-                    dp[i][j] = dp[i - 1][j]
-
-        # printMatrix(dp)
-        return dp[-1][-1] if dp[-1][-1] < float('inf') else -1
-    # endFunc
-
-    def coinChange1(self, coins: List[int], amount: int) -> int:
-        """
-        DP
-        有些路径不能走, 要标识一下, 不然结果不对
-        """
-        dp = [(-1, amount)] * (amount + 1)
-        dp[0] = (0, amount)
-        for i in range(1, amount + 1):
-            availCoins = [coin for coin in coins if coin <= i]
-            if availCoins:
-                candLis = [(dp[i - coin][0] + 1, dp[i - coin][1] - coin) for coin in availCoins if dp[i - coin][0] != -1]
-                if candLis:
-                    dp[i] = min(candLis, key=lambda x: x[0])
-
-        return dp[amount][0] if dp[amount][1] == 0 else -1
+        dp = [[[0] * (p1 + 1) for _ in range(p0 + 1)] for _ in range(eleCnt + 1)]
+        for i in range(1, eleCnt + 1):
+            for j in range(p0 + 1):
+                for k in range(p1 + 1):
+                    if j - cost0[i - 1] >= 0 and k - cost1[i - 1] >= 0:
+                        dp[i][j][k] = max(dp[i - 1][j][k], dp[i - 1][j - cost0[i - 1]][k - cost1[i - 1]] + value[i - 1])
+                    else:
+                        dp[i][j][k] = dp[i - 1][j][k]
+        
+        return dp[-1][-1][-1]
     # endFunc
 # endClass
 
@@ -83,7 +71,7 @@ def func():
     # !! step2: change function name
     s = Solution()
     myFuncLis = [
-        s.coinChange,
+        s.findMaxForm,
         # optional: add another function for comparison
     ]
 
@@ -100,18 +88,18 @@ def func():
 
     # !! step3: change input para, input para can be found in "run code" - "test case"
     # ! para1
-    input[0] = parsePara('coins = [1,2,5], amount = 11')
+    input[0] = parsePara('strs = ["10","0001","111001","1","0"], m = 5, n = 3')
     # input[0] = (
         # None,
     # )
-    expectedRlt[0] = 3
+    expectedRlt[0] = 4
 
     # ! para2
-    input[1] = parsePara('coins = [2], amount = 3')
+    input[1] = parsePara('strs = ["10","0","1"], m = 1, n = 1')
     # input[1] = (
         # None,
     # )
-    expectedRlt[1] = -1
+    expectedRlt[1] = 2
 
     # ! para3
     # input[2] = parsePara('None')
@@ -240,3 +228,5 @@ if __name__ == "__main__":
 # endIf
 
 # !! ========================== Obsolete Code ==========================
+
+

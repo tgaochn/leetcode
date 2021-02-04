@@ -4,7 +4,7 @@
 Author:
     Tian Gao (tgaochn@gmail.com)
 CreationDate:
-    Tue, 01/26/2021, 23:37
+    Mon, 01/18/2021, 16:16
 # !! Description:
 
 """
@@ -12,7 +12,6 @@ import sys
 from typing import List
 
 sys.path.append('..')
-sys.path.append('../..')
 from utils import binaryTree, nTree, singleLinkedList
 from utils.utils import (
     printMatrix,
@@ -33,49 +32,57 @@ false = False
 
 # !! step1: replace these two lines with the given code
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
+    def maxProduct(self, nums: List[int]) -> int:
         """
-        完全背包 complete package
-        https://leetcode-cn.com/problems/coin-change/solution/dong-tai-gui-hua-shi-yong-wan-quan-bei-bao-wen-ti-/
-        评论部分
+        标准DP - 两个一维DP
+        不知道win要缩还是要扩, 不能用 sliding window
+        和53很像
+        https://leetcode-cn.com/problems/maximum-product-subarray/solution/duo-chong-si-lu-qiu-jie-by-powcai-3/
+        考虑到负数, 要注意做乘法要同时找max和min
+
+        DP[i] - nums[0: i - 1]中的Maximum Product Subarray
         """
-        n = len(coins)
-        p = amount
-        value = [1] * n
-        cost = coins
 
-        dp = [[float('inf')] * (p + 1) for _ in range(n + 1)]
+        n = len(nums)
+        dpMax = [0] * n
+        dpMin = [0] * n
+        dpMax[0] = nums[0]
+        dpMin[0] = nums[0]
+        maxProd = nums[0]
 
-        # 第一列为0, 而不是第一行
-        for i in range(n + 1):
-            dp[i][0] = 0
+        for i in range(1, n):
+            dpMax[i] = max(dpMax[i - 1] * nums[i], dpMin[i - 1] * nums[i], nums[i])
+            dpMin[i] = min(dpMax[i - 1] * nums[i], dpMin[i - 1] * nums[i], nums[i])
+            maxProd = max(maxProd, dpMax[i])
 
-        for i in range(1, n + 1):
-            for j in range(p + 1):
-                if j - cost[i - 1] >= 0:
-                    dp[i][j] = min(dp[i - 1][j], dp[i][j - cost[i - 1]] + value[i - 1]) # 取最小
-                else:
-                    dp[i][j] = dp[i - 1][j]
+        return maxProd
 
-        # printMatrix(dp)
-        return dp[-1][-1] if dp[-1][-1] < float('inf') else -1
-    # endFunc
-
-    def coinChange1(self, coins: List[int], amount: int) -> int:
+    def maxProduct1(self, nums: List[int]) -> int:
         """
-        DP
-        有些路径不能走, 要标识一下, 不然结果不对
+        非标准DP
+        不知道win要缩还是要扩, 不能用 sliding window
+        和53很像
+        https://leetcode-cn.com/problems/maximum-product-subarray/solution/duo-chong-si-lu-qiu-jie-by-powcai-3/
+        考虑到负数, 要注意做乘法要同时找max和min
         """
-        dp = [(-1, amount)] * (amount + 1)
-        dp[0] = (0, amount)
-        for i in range(1, amount + 1):
-            availCoins = [coin for coin in coins if coin <= i]
-            if availCoins:
-                candLis = [(dp[i - coin][0] + 1, dp[i - coin][1] - coin) for coin in availCoins if dp[i - coin][0] != -1]
-                if candLis:
-                    dp[i] = min(candLis, key=lambda x: x[0])
 
-        return dp[amount][0] if dp[amount][1] == 0 else -1
+        n = len(nums)
+        # dp = [0] * n
+        # dp[0] = nums[0]
+        preMax = nums[0]
+        preMin = nums[0]
+        maxProd = preMax
+
+        for i in range(1, n):
+            # dp[i] = max(dp[i - 1] * nums[i], nums[i])
+            # preMax = max(preMax, dp[i])
+            curMax = max(preMax * nums[i], preMin * nums[i], nums[i])
+            curMin = min(preMax * nums[i], preMin * nums[i], nums[i])
+            maxProd = max(maxProd, curMax)
+            preMax = curMax
+            preMin = curMin
+
+        return maxProd
     # endFunc
 # endClass
 
@@ -83,7 +90,7 @@ def func():
     # !! step2: change function name
     s = Solution()
     myFuncLis = [
-        s.coinChange,
+        s.maxProduct,
         # optional: add another function for comparison
     ]
 
@@ -100,25 +107,25 @@ def func():
 
     # !! step3: change input para, input para can be found in "run code" - "test case"
     # ! para1
-    input[0] = parsePara('coins = [1,2,5], amount = 11')
-    # input[0] = (
-        # None,
-    # )
-    expectedRlt[0] = 3
+    # input[0] = parsePara('None')
+    input[0] = (
+        [2, 3, -2, 4],
+    )
+    expectedRlt[0] = 6
 
     # ! para2
-    input[1] = parsePara('coins = [2], amount = 3')
-    # input[1] = (
-        # None,
-    # )
-    expectedRlt[1] = -1
+    # input[1] = parsePara('Input: [-2,0,-1]')
+    input[1] = (
+        [-2, 0, -1],
+    )
+    expectedRlt[1] = 0
 
     # ! para3
     # input[2] = parsePara('None')
     input[2] = (
-        None,
+        [-2, 3, -4],
     )
-    expectedRlt[2] = None
+    expectedRlt[2] = 24
 
     # ! para4
     # input[3] = parsePara('None')
@@ -238,5 +245,3 @@ def main():
 if __name__ == "__main__":
     main()
 # endIf
-
-# !! ========================== Obsolete Code ==========================

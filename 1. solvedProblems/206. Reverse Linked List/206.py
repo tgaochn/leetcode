@@ -50,7 +50,7 @@ class Solution:
         
         return recurReverse(None, head)
 
-    def reverseList10(self, head: ListNode) -> ListNode:
+    def reverseList1(self, head: ListNode) -> ListNode:
         if not head or not head.next: return head
         
         pre = None

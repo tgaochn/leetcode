@@ -43,7 +43,6 @@ class Solution:
                 if i == j or (i == j + 1 and s[i] == s[j]) or (dp[j + 1][i - 1] and s[i] == s[j]):
                     dp[j][i] = 1
                     rlt += 1
-
         
         return rlt
     # endFunc

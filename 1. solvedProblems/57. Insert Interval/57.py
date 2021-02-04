@@ -4,7 +4,7 @@
 Author:
     Tian Gao (tgaochn@gmail.com)
 CreationDate:
-    Tue, 01/26/2021, 23:37
+    Mon, 01/18/2021, 20:41
 # !! Description:
 
 """
@@ -12,7 +12,6 @@ import sys
 from typing import List
 
 sys.path.append('..')
-sys.path.append('../..')
 from utils import binaryTree, nTree, singleLinkedList
 from utils.utils import (
     printMatrix,
@@ -33,49 +32,35 @@ false = False
 
 # !! step1: replace these two lines with the given code
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
+    def insert(self, intervals: List[List[int]], newInterval: List[int]) -> List[List[int]]:
         """
-        完全背包 complete package
-        https://leetcode-cn.com/problems/coin-change/solution/dong-tai-gui-hua-shi-yong-wan-quan-bei-bao-wen-ti-/
-        评论部分
+        ref -> 715
+        增加区间, 可以直接参考终极题目715
         """
-        n = len(coins)
-        p = amount
-        value = [1] * n
-        cost = coins
+        if not intervals: return [newInterval]
+        
+        n = len(intervals)
+        l = 0
+        left = newInterval[0]
+        right = newInterval[1]
+        
+        while l < n and left > intervals[l][1]:
+            l += 1
+        
+        if l == n:
+            return intervals + [newInterval]
 
-        dp = [[float('inf')] * (p + 1) for _ in range(n + 1)]
-
-        # 第一列为0, 而不是第一行
-        for i in range(n + 1):
-            dp[i][0] = 0
-
-        for i in range(1, n + 1):
-            for j in range(p + 1):
-                if j - cost[i - 1] >= 0:
-                    dp[i][j] = min(dp[i - 1][j], dp[i][j - cost[i - 1]] + value[i - 1]) # 取最小
-                else:
-                    dp[i][j] = dp[i - 1][j]
-
-        # printMatrix(dp)
-        return dp[-1][-1] if dp[-1][-1] < float('inf') else -1
-    # endFunc
-
-    def coinChange1(self, coins: List[int], amount: int) -> int:
-        """
-        DP
-        有些路径不能走, 要标识一下, 不然结果不对
-        """
-        dp = [(-1, amount)] * (amount + 1)
-        dp[0] = (0, amount)
-        for i in range(1, amount + 1):
-            availCoins = [coin for coin in coins if coin <= i]
-            if availCoins:
-                candLis = [(dp[i - coin][0] + 1, dp[i - coin][1] - coin) for coin in availCoins if dp[i - coin][0] != -1]
-                if candLis:
-                    dp[i] = min(candLis, key=lambda x: x[0])
-
-        return dp[amount][0] if dp[amount][1] == 0 else -1
+        r = l
+        while r < n and right >= intervals[r][0]:
+            r += 1
+        
+        if r == 0:
+            return [newInterval] + intervals
+        
+        r -= 1
+        left = min(left, intervals[l][0])
+        right = max(right, intervals[r][1])
+        return intervals[:l] + [[left, right]] + intervals[r + 1:]
     # endFunc
 # endClass
 
@@ -83,7 +68,7 @@ def func():
     # !! step2: change function name
     s = Solution()
     myFuncLis = [
-        s.coinChange,
+        s.insert,
         # optional: add another function for comparison
     ]
 
@@ -100,32 +85,34 @@ def func():
 
     # !! step3: change input para, input para can be found in "run code" - "test case"
     # ! para1
-    input[0] = parsePara('coins = [1,2,5], amount = 11')
-    # input[0] = (
-        # None,
-    # )
-    expectedRlt[0] = 3
+    # input[0] = parsePara('None')
+    input[0] = (
+        [[1, 3], [6, 9]],
+        [2, 5],
+    )
+    expectedRlt[0] = [[1, 5], [6, 9]]
 
     # ! para2
-    input[1] = parsePara('coins = [2], amount = 3')
+    input[1] = parsePara('intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]')
     # input[1] = (
-        # None,
+        # [[1, 2], [3, 5], [6, 7], [8, 10], [12, 16]],
     # )
-    expectedRlt[1] = -1
+    expectedRlt[1] = [[1, 2], [3, 10], [12, 16]]
 
     # ! para3
-    # input[2] = parsePara('None')
-    input[2] = (
-        None,
-    )
-    expectedRlt[2] = None
+    input[2] = parsePara('intervals = [], newInterval = [5,7]')
+    # input[2] = (
+        # None,
+    # )
+    expectedRlt[2] = [[5, 7]]
 
     # ! para4
     # input[3] = parsePara('None')
     input[3] = (
-        None,
+        [[1, 5]],
+        [6, 8],
     )
-    expectedRlt[3] = None
+    expectedRlt[3] = [[1, 5], [6, 8]]
 
     # ! para5
     # input[4] = parsePara('None')
@@ -238,5 +225,3 @@ def main():
 if __name__ == "__main__":
     main()
 # endIf
-
-# !! ========================== Obsolete Code ==========================

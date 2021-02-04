@@ -4,7 +4,7 @@
 Author:
     Tian Gao (tgaochn@gmail.com)
 CreationDate:
-    Tue, 01/26/2021, 23:37
+    Wed, 01/27/2021, 23:32
 # !! Description:
 
 """
@@ -33,49 +33,30 @@ false = False
 
 # !! step1: replace these two lines with the given code
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
+    def findPrice(self, prices):
         """
-        完全背包 complete package
-        https://leetcode-cn.com/problems/coin-change/solution/dong-tai-gui-hua-shi-yong-wan-quan-bei-bao-wen-ti-/
-        评论部分
+        LC 739 变种, 单调栈
+        https://leetcode.com/discuss/interview-question/378221/Twitter-or-OA-2019-or-Final-Discounted-Price
+        据说一样有 overflow，计算总价的时候得用 long
         """
-        n = len(coins)
-        p = amount
-        value = [1] * n
-        cost = coins
+        myStack = []
+        totalCost = 0
+        itemIdxList = []
+        n = len(prices)
 
-        dp = [[float('inf')] * (p + 1) for _ in range(n + 1)]
+        for i in range(n - 1, -1, -1):
+            while myStack and myStack[-1] > prices[i]:
+                myStack.pop()
 
-        # 第一列为0, 而不是第一行
-        for i in range(n + 1):
-            dp[i][0] = 0
+            if not myStack:
+                itemIdxList.append(i)
 
-        for i in range(1, n + 1):
-            for j in range(p + 1):
-                if j - cost[i - 1] >= 0:
-                    dp[i][j] = min(dp[i - 1][j], dp[i][j - cost[i - 1]] + value[i - 1]) # 取最小
-                else:
-                    dp[i][j] = dp[i - 1][j]
+            totalCost += prices[i] - myStack[-1] if myStack else 0
+            myStack.append(prices[i])
 
-        # printMatrix(dp)
-        return dp[-1][-1] if dp[-1][-1] < float('inf') else -1
-    # endFunc
-
-    def coinChange1(self, coins: List[int], amount: int) -> int:
-        """
-        DP
-        有些路径不能走, 要标识一下, 不然结果不对
-        """
-        dp = [(-1, amount)] * (amount + 1)
-        dp[0] = (0, amount)
-        for i in range(1, amount + 1):
-            availCoins = [coin for coin in coins if coin <= i]
-            if availCoins:
-                candLis = [(dp[i - coin][0] + 1, dp[i - coin][1] - coin) for coin in availCoins if dp[i - coin][0] != -1]
-                if candLis:
-                    dp[i] = min(candLis, key=lambda x: x[0])
-
-        return dp[amount][0] if dp[amount][1] == 0 else -1
+        itemIdxList.reverse()
+        totalCost += sum([prices[idx] for idx in itemIdxList])
+        return [totalCost, itemIdxList]
     # endFunc
 # endClass
 
@@ -83,11 +64,11 @@ def func():
     # !! step2: change function name
     s = Solution()
     myFuncLis = [
-        s.coinChange,
+        s.findPrice,
         # optional: add another function for comparison
     ]
 
-    onlyDisplayError = True
+    onlyDisplayError = False
     enableInput = [True] * testCaseCnt
     input = [None] * testCaseCnt
     expectedRlt = [None] * testCaseCnt
@@ -100,25 +81,25 @@ def func():
 
     # !! step3: change input para, input para can be found in "run code" - "test case"
     # ! para1
-    input[0] = parsePara('coins = [1,2,5], amount = 11')
-    # input[0] = (
-        # None,
-    # )
-    expectedRlt[0] = 3
+    # input[0] = parsePara('None')
+    input[0] = (
+        [2, 3, 1, 2, 4, 2],
+    )
+    expectedRlt[0] = [8, [2, 5]]
 
     # ! para2
-    input[1] = parsePara('coins = [2], amount = 3')
-    # input[1] = (
-        # None,
-    # )
-    expectedRlt[1] = -1
+    # input[1] = parsePara('None')
+    input[1] = (
+        [2, 3, 5, 2, 4, 1],
+    )
+    expectedRlt[1] = [9, [5]]
 
     # ! para3
     # input[2] = parsePara('None')
     input[2] = (
-        None,
+        [2, 4, 3, 2, 4, 6],
     )
-    expectedRlt[2] = None
+    expectedRlt[2] = [14, [3, 4, 5]]
 
     # ! para4
     # input[3] = parsePara('None')

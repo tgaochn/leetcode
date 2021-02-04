@@ -4,7 +4,7 @@
 Author:
     Tian Gao (tgaochn@gmail.com)
 CreationDate:
-    Tue, 01/26/2021, 23:37
+    Wed, 01/27/2021, 23:21
 # !! Description:
 
 """
@@ -33,49 +33,23 @@ false = False
 
 # !! step1: replace these two lines with the given code
 class Solution:
-    def coinChange(self, coins: List[int], amount: int) -> int:
+    def canReach(self, x1, y1, x2, y2):
         """
-        完全背包 complete package
-        https://leetcode-cn.com/problems/coin-change/solution/dong-tai-gui-hua-shi-yong-wan-quan-bei-bao-wen-ti-/
-        评论部分
+        应该能过
+        https://aonecode.com/twitter-oa#sp
+        https://leetcode.com/discuss/interview-question/378508/Twitter-or-OA-2019-or-Reaching-Points
+        https://leetcode-cn.com/problems/reaching-points/solution/guan-fang-ti-jie-zai-jie-shi-xi-lie-by-aijdf-2/
         """
-        n = len(coins)
-        p = amount
-        value = [1] * n
-        cost = coins
-
-        dp = [[float('inf')] * (p + 1) for _ in range(n + 1)]
-
-        # 第一列为0, 而不是第一行
-        for i in range(n + 1):
-            dp[i][0] = 0
-
-        for i in range(1, n + 1):
-            for j in range(p + 1):
-                if j - cost[i - 1] >= 0:
-                    dp[i][j] = min(dp[i - 1][j], dp[i][j - cost[i - 1]] + value[i - 1]) # 取最小
-                else:
-                    dp[i][j] = dp[i - 1][j]
-
-        # printMatrix(dp)
-        return dp[-1][-1] if dp[-1][-1] < float('inf') else -1
-    # endFunc
-
-    def coinChange1(self, coins: List[int], amount: int) -> int:
-        """
-        DP
-        有些路径不能走, 要标识一下, 不然结果不对
-        """
-        dp = [(-1, amount)] * (amount + 1)
-        dp[0] = (0, amount)
-        for i in range(1, amount + 1):
-            availCoins = [coin for coin in coins if coin <= i]
-            if availCoins:
-                candLis = [(dp[i - coin][0] + 1, dp[i - coin][1] - coin) for coin in availCoins if dp[i - coin][0] != -1]
-                if candLis:
-                    dp[i] = min(candLis, key=lambda x: x[0])
-
-        return dp[amount][0] if dp[amount][1] == 0 else -1
+        while x2 >= x1 and y2 >= y1:
+            if x1 == x2 and y1 == y2: 
+                # return 'Yes'
+                return True
+            if x2 >= y2:
+                x2 -= y2
+            else:
+                y2 -= x2
+        return False
+        # return 'No'
     # endFunc
 # endClass
 
@@ -83,11 +57,11 @@ def func():
     # !! step2: change function name
     s = Solution()
     myFuncLis = [
-        s.coinChange,
+        s.canReach,
         # optional: add another function for comparison
     ]
 
-    onlyDisplayError = True
+    onlyDisplayError = False
     enableInput = [True] * testCaseCnt
     input = [None] * testCaseCnt
     expectedRlt = [None] * testCaseCnt
@@ -100,39 +74,39 @@ def func():
 
     # !! step3: change input para, input para can be found in "run code" - "test case"
     # ! para1
-    input[0] = parsePara('coins = [1,2,5], amount = 11')
-    # input[0] = (
-        # None,
-    # )
-    expectedRlt[0] = 3
+    # input[0] = parsePara('None')
+    input[0] = (
+        1,4,5,9,
+    )
+    expectedRlt[0] = True
 
     # ! para2
-    input[1] = parsePara('coins = [2], amount = 3')
-    # input[1] = (
-        # None,
-    # )
-    expectedRlt[1] = -1
+    # input[1] = parsePara('None')
+    input[1] = (
+        0, 2, 2, 2,
+    )
+    expectedRlt[1] = True
 
     # ! para3
     # input[2] = parsePara('None')
     input[2] = (
-        None,
+        1,1,3,5,
     )
-    expectedRlt[2] = None
+    expectedRlt[2] = True
 
     # ! para4
     # input[3] = parsePara('None')
     input[3] = (
-        None,
+        1,1,2,2,
     )
-    expectedRlt[3] = None
+    expectedRlt[3] = False
 
     # ! para5
     # input[4] = parsePara('None')
     input[4] = (
-        None
+        1,1,1,1,
     )
-    expectedRlt[4] = None
+    expectedRlt[4] = True
 
     # ! para6
     # input[5] = parsePara('None')
@@ -152,7 +126,7 @@ def func():
 
     # for each test case
     for inputPara, enableInput, expectedRlt in allInput:
-        if not enableInput or not inputPara or (isinstance(inputPara, tuple) and not inputPara[0]): continue
+        if not enableInput or not inputPara or (isinstance(inputPara, tuple) and inputPara[0] is None): continue
         inputParaList = [None] * funcParaCnt
 
         if not isinstance(inputPara, tuple):
@@ -195,7 +169,7 @@ def func():
             # output para
             for k in range(funcParaCnt):
                 para = inputParaList[k]
-                if para:
+                if para is not None:
                     formatPrint('input %s:' % (k + 1), para)
                 else:
                     print(para)
